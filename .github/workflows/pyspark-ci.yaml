@@ -1,0 +1,33 @@
+name: DataOps PySpark CI/CD Pipeline
+
+on:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  continuous-integration:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Python Runtime
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.9"
+
+      - name: Install Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install pyspark==3.2.2 pytest==8.1.1
+
+      - name: Execute PySpark Unit Tests
+        run: |
+          python -m pytest -v test_orders_pyspark_job.py
+
+      - name: Package Job Archive
+        run: |
+          zip -r job_archive.zip orders.py
